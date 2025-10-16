@@ -16,27 +16,34 @@ public class Musica {
     private Long id;
     @Column(unique = true)
     private String nome;
-    private String album;
-    private LocalDate dataLancamento;
-
+    @ManyToOne
+    private Album album;
     @ManyToOne
     private Artista artista;
 
     //Constructors
-    public Musica(String nome, String album, LocalDate dataLancamento) {
+    public Musica(String nome, Album album, LocalDate dataLancamento, Artista artista) {
         this.nome = nome;
         this.album = album;
-        this.dataLancamento = dataLancamento;
+        this.artista = artista;
     }
 
     public Musica() {}
 
     @Override
     public String toString() {
-        return "Musica: " + nome +  " - Album: " + album + "(" + artista.getNome() + ") - Data de Lançamento: " + dataLancamento;
+        return "Musica: " + nome +  " - Album: " + album.getNome() + "(" + album.getAnoLancamento() + ") |" + artista.getNome() ;
     }
 
     //Getters and Setters
+    public Album getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(Album album) {
+        this.album = album;
+    }
+
     public String getNome() {
         return nome;
     }
@@ -59,22 +66,6 @@ public class Musica {
 
     public void setNome(String nome) {
         this.nome = nome;
-    }
-
-    public String getAlbum() {
-        return album;
-    }
-
-    public void setAlbum(String album) {
-        this.album = album;
-    }
-
-    public LocalDate getDataLancamento() {
-        return dataLancamento;
-    }
-
-    public void setDataLancamento(LocalDate dataLancamento) {
-        this.dataLancamento = dataLancamento;
     }
     
 }

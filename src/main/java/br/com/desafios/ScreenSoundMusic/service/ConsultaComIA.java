@@ -1,5 +1,5 @@
 package br.com.desafios.ScreenSoundMusic.service;
 
-public class MusicaService {
+public class ConsultaComIA {
 
 }

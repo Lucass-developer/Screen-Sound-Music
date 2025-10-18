@@ -6,4 +6,6 @@ import br.com.desafios.ScreenSoundMusic.model.Artista;
 
 public interface ArtistaRepository extends JpaRepository<Artista, Long> {
 
+    Artista findByNomeILIKE(String nomeArtista);
+
 }

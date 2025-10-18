@@ -25,7 +25,7 @@ public class ScreenSoundMusicApplication implements CommandLineRunner {
 	@Autowired
 	private AlbumRepository albumRepository;
 
-	@Override
+	@Override 
 	public void run(String... args) throws Exception {
 		Main main = new Main(artistaRepository, musicaRepository, albumRepository);
 		main.menu();

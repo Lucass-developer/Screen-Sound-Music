@@ -6,4 +6,6 @@ import br.com.desafios.ScreenSoundMusic.model.Album;
 
 public interface AlbumRepository extends JpaRepository<Album, Long> {
 
+    Album findByNomeILIKE(String nomeAlbum);
+
 }

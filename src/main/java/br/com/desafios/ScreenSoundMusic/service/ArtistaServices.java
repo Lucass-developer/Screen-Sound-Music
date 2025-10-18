@@ -18,31 +18,15 @@ public class ArtistaServices {
 
     // Public Methods
     public void cadastrarArtista(Scanner scanner) {
-      System.out.println("--- Cadastro de Artista ---");
-      System.out.print("Nome do Artista: ");
-      String nomeArtista = scanner.nextLine();
-      if(existeArtista(nomeArtista)) {
-        System.out.println("Artista já cadastrado!");
-        return;
-      }
-      Tipo tipo;
-      do {
-            System.out.println("Selecione o tipo do Artista (Solo, Banda, Dupla):");
-            String opcaoTipoArtista = scanner.nextLine().toUpperCase();
-
-             tipo= switch (opcaoTipoArtista) {
-                case "SOLO" -> Tipo.SOLO;
-                case "BANDA" -> Tipo.BANDA;
-                case "DUPLA" -> Tipo.DUPLA;
-                default -> null; 
-            };
-            if (tipo == null) {
-                System.out.println("Opção inválida!");
-            }   
-        } while (tipo == null);
-      Artista artista = new Artista(nomeArtista, tipo);
-      artistaRepository.save(artista);
-      System.out.println("Artista cadastrado com sucesso!");
+        System.out.println("--- Cadastro de Artista ---");
+        System.out.print("Nome do Artista: ");
+        String nomeArtista = scanner.nextLine();
+        if (existeArtista(nomeArtista)) {
+            System.out.println("Artista já cadastrado!");
+            return;
+        }
+        Tipo tipo = solicitarTipoArtista(scanner);
+        salvarArtista(nomeArtista, tipo);
     }
 
     public void listarArtistas() {
@@ -50,12 +34,23 @@ public class ArtistaServices {
         listaDeArtistas().forEach(System.out::println);
     }
 
-    public Artista selecionarArtista(Scanner scanner){
-        System.out.println("Lista de Artistas:");
-        listaDeArtistas().forEach(a -> System.out.println(a.getNome()));
-        System.out.println("Digite o nome do Artista:");
-        String nomeArtista = scanner.nextLine().toLowerCase();
-        return listaDeArtistas().stream().filter(artista -> artista.getNome().toLowerCase().equals(nomeArtista)).findFirst().orElse(null);
+    public Artista selecionarArtista(Scanner scanner) {
+        while (true) {
+            System.out.println("Lista de Artistas:");
+            listaDeArtistas().forEach(a -> System.out.println(a.getNome()));
+            System.out.println("Digite o nome do Artista:");
+            String nomeArtista = scanner.nextLine().toLowerCase();
+            try {
+                Artista artista = artistaRepository.findByNomeILIKE(nomeArtista);
+                if (artista != null) {
+                    return artista;
+                } else {
+                    System.out.println("Artista não encontrado!");
+                }
+            } catch (Exception e) {
+                System.out.println("Erro ao buscar artista: " + e.getMessage());
+            }
+        }
     }
 
     public void buscarInformacoesArtista(Scanner scanner) {
@@ -68,7 +63,35 @@ public class ArtistaServices {
     }
 
     private Boolean existeArtista(String nomeArtista) {
-        return listaDeArtistas().stream().anyMatch(artista -> artista.getNome().toLowerCase().equals(nomeArtista.toLowerCase()));
+        return listaDeArtistas().stream()
+                .anyMatch(artista -> artista.getNome().toLowerCase().equals(nomeArtista.toLowerCase()));
     }
 
+    private void salvarArtista(String nome, Tipo tipo) {
+       try {
+            Artista artista = new Artista(nome, tipo);
+            artistaRepository.save(artista);
+            System.out.println("Artista cadastrado com sucesso!");
+        } catch (Exception e) {
+            System.out.println("Erro ao cadastrar artista: " + e.getMessage());
+        }
+    }
+
+    private Tipo solicitarTipoArtista(Scanner scanner) {
+        Tipo tipo;
+        do {
+            System.out.println("Selecione o tipo do Artista (Solo, Banda, Dupla):");
+            String opcaoTipoArtista = scanner.nextLine().toUpperCase();
+            tipo = switch (opcaoTipoArtista) {
+                case "SOLO" -> Tipo.SOLO;
+                case "BANDA" -> Tipo.BANDA;
+                case "DUPLA" -> Tipo.DUPLA;
+                default -> null;
+            };
+            if (tipo == null) {
+                System.out.println("Opção inválida!");
+            }
+        } while (tipo == null);
+        return tipo;
+    }
 }

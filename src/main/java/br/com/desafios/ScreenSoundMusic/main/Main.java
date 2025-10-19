@@ -21,7 +21,7 @@ public class Main {
             AlbumRepository albumRepository) {
         this.artistaServices = new ArtistaServices(artistaRepository);
         this.musicaServices = new MusicaServices(musicaRepository, artistaRepository, albumRepository);
-        this.albumServices = new AlbumServices(albumRepository);
+        this.albumServices = new AlbumServices(albumRepository, artistaServices);
     }
 
     // Public Methods
@@ -37,7 +37,7 @@ public class Main {
                     4 - Listar Músicas
                     5 - Listar Artistas
                     6 - Listar Albums
-                    7 - Buscar informações de um Artista
+                    7 - Buscar informacoes de um Artista
                     0 - Sair
                     """);
             opcao = scanner.nextInt();

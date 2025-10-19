@@ -62,6 +62,7 @@ public class Artista {
     }
 
     public void setMusicas(List<Musica> musicas) {
+        musicas.forEach(musica -> musica.setArtista(this));
         this.musicas = musicas;
     }
 

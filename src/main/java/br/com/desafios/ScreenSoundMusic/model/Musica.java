@@ -1,7 +1,5 @@
 package br.com.desafios.ScreenSoundMusic.model;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,7 +20,7 @@ public class Musica {
     private Artista artista;
 
     //Constructors
-    public Musica(String nome, Album album, LocalDate dataLancamento, Artista artista) {
+    public Musica(String nome, Album album, Artista artista) {
         this.nome = nome;
         this.album = album;
         this.artista = artista;
@@ -32,7 +30,7 @@ public class Musica {
 
     @Override
     public String toString() {
-        return "Musica: " + nome +  " - Album: " + album.getNome() + "(" + album.getAnoLancamento() + ") |" + artista.getNome() ;
+        return "+ " + nome +  " - Album: " + album.getNome() + "(" + album.getAnoLancamento() + ") | " + artista.getNome() ;
     }
 
     //Getters and Setters

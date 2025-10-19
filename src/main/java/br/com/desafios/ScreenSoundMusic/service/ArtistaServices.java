@@ -3,6 +3,7 @@ package br.com.desafios.ScreenSoundMusic.service;
 import java.util.List;
 import java.util.Scanner;
 
+import br.com.desafios.ScreenSoundMusic.model.Album;
 import br.com.desafios.ScreenSoundMusic.model.Artista;
 import br.com.desafios.ScreenSoundMusic.model.Tipo;
 import br.com.desafios.ScreenSoundMusic.repository.ArtistaRepository;
@@ -15,10 +16,12 @@ public class ArtistaServices {
     public ArtistaServices(ArtistaRepository artistaRepository) {
         this.artistaRepository = artistaRepository;
     }
-
+  
     // Public Methods
     public void cadastrarArtista(Scanner scanner) {
-        System.out.println("--- Cadastro de Artista ---");
+        String resposta;
+        do {
+            System.out.println("--- Cadastro de Artista ---");
         System.out.print("Nome do Artista: ");
         String nomeArtista = scanner.nextLine();
         if (existeArtista(nomeArtista)) {
@@ -27,6 +30,9 @@ public class ArtistaServices {
         }
         Tipo tipo = solicitarTipoArtista(scanner);
         salvarArtista(nomeArtista, tipo);
+        System.out.println("Deseja Adionar outro artista? (S/N)");
+        resposta = scanner.nextLine();
+        } while (!resposta.equalsIgnoreCase("N"));
     }
 
     public void listarArtistas() {
@@ -51,6 +57,10 @@ public class ArtistaServices {
                 System.out.println("Erro ao buscar artista: " + e.getMessage());
             }
         }
+    }
+
+    public List<Album> listaDeAlbums(Artista artista) {
+        return artistaRepository.findAlbumsByArtista(artista);
     }
 
     public void buscarInformacoesArtista(Scanner scanner) {

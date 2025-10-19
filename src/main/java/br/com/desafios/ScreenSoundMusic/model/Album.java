@@ -1,6 +1,5 @@
 package br.com.desafios.ScreenSoundMusic.model;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -20,14 +19,14 @@ public class Album {
     private Long id;
     @Column(unique = true)
     private String nome;
-    private LocalDate anoLancamento;
+    private Integer anoLancamento;
     @ManyToOne
     private Artista artista;
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Musica> musicas;
 
     //Cosntructors
-    public Album(String nome, LocalDate anoDeLancamento, Artista artista) {
+    public Album(String nome, Integer anoDeLancamento, Artista artista) {
         this.nome = nome;
         this.anoLancamento = anoDeLancamento;
         this.artista = artista;
@@ -46,7 +45,7 @@ public class Album {
             .append(m.getArtista().getNome())
             .append("\n");
         }
-        return "Album: " + nome + " - Ano de Lançamento: " + anoLancamento + "\n" + stringBuilder.toString();
+        return "Album: " + nome + " (" + anoLancamento + ")\n" + stringBuilder.toString();
     }
 
     //Getters and Setters
@@ -58,7 +57,7 @@ public class Album {
         return nome;
     }
 
-    public LocalDate getAnoLancamento() {
+    public Integer getAnoLancamento() {
         return anoLancamento;
     }
 

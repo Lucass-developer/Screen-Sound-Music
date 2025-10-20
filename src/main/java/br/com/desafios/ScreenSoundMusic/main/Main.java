@@ -2,6 +2,7 @@ package br.com.desafios.ScreenSoundMusic.main;
 
 import java.util.Scanner;
 
+import br.com.desafios.ScreenSoundMusic.model.Artista;
 import br.com.desafios.ScreenSoundMusic.repository.AlbumRepository;
 import br.com.desafios.ScreenSoundMusic.repository.ArtistaRepository;
 import br.com.desafios.ScreenSoundMusic.repository.MusicaRepository;
@@ -26,11 +27,12 @@ public class Main {
 
     // Public Methods
     public void menu() {
+        Artista artista = null;
         int opcao;
         System.out.println("\n--- Bem-vindo ao Screen Sound Music! ---");
         do {
             System.out.println("""
-                    -+- Menu Principal -+-
+                    --- Menu Principal ---
                     1 - Cadastrar Artista
                     2 - Cadastrar Album
                     3 - Cadastrar Música
@@ -44,7 +46,7 @@ public class Main {
             scanner.nextLine();
             switch (opcao) {
                 case 1 -> artistaServices.cadastrarArtista(scanner);
-                case 2 -> albumServices.cadastrarAlbum(scanner);
+                case 2 -> albumServices.cadastrarAlbum(scanner, artista);
                 case 3 -> musicaServices.cadastrarMusica(scanner);
                 case 4 -> musicaServices.listarMusicas();
                 case 5 -> artistaServices.listarArtistas();

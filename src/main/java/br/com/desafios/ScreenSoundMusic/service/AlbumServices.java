@@ -1,5 +1,6 @@
 package br.com.desafios.ScreenSoundMusic.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -20,22 +21,26 @@ public class AlbumServices {
     // Public Methods
     public void listarAlbums() {
         System.out.println("--- Albums ---");
-        listaDeAlbums().forEach(System.out::println);
+        listaDeAlbums().stream()
+                .sorted(Comparator.comparing(Album::getArtista, Comparator.comparing(Artista::getNome)))
+                .forEach(System.out::println);
     }
 
-    public void cadastrarAlbum(Scanner scanner) {//MUDAR PARA RECEBER ARTISTA COMO PARAMETRO
+    public void cadastrarAlbum(Scanner scanner, Artista artista) {
         String resposta;
         do {
             System.out.println("--- Cadastro de Album ---");
             String novoArtista;
-            do {
-                System.out.println("Deseja Adionar um novo artista? (S/N)");
-                novoArtista = scanner.nextLine();
-                if (novoArtista.equalsIgnoreCase("S")) {
-                    artistaServices.cadastrarArtista(scanner);
-                }
-            } while (!novoArtista.equalsIgnoreCase("N"));
-            Artista artista = artistaServices.selecionarArtista(scanner);
+            if (artista == null) {
+                do {
+                    System.out.println("Deseja Adionar um novo artista? (S/N)");
+                    novoArtista = scanner.nextLine();
+                    if (novoArtista.equalsIgnoreCase("S")) {
+                        artistaServices.cadastrarArtista(scanner);
+                    }
+                } while (!novoArtista.equalsIgnoreCase("N"));
+                artista = artistaServices.selecionarArtista(scanner);
+            }
             System.out.print("Nome do Album: ");
             String nomeAlbum = scanner.nextLine();
             if (existeAlbum(nomeAlbum)) {
@@ -46,8 +51,10 @@ public class AlbumServices {
             Integer anoDeLancamento = scanner.nextInt();
             scanner.nextLine();
             salvarAlbum(nomeAlbum, artista, anoDeLancamento);
+
             System.out.println("Deseja Adionar outro album? (S/N)");
             resposta = scanner.nextLine();
+
         } while (!resposta.equalsIgnoreCase("N"));
     }
 
@@ -63,10 +70,10 @@ public class AlbumServices {
             System.out.println("Digite o número do Album (0 Para Adicionar um Novo):");
             int numeroAlbum = scanner.nextInt();
             scanner.nextLine();
-            
+
             if (numeroAlbum <= albums.size() && numeroAlbum >= 0) {
                 if (numeroAlbum == 0) {
-                    cadastrarAlbum(scanner);
+                    cadastrarAlbum(scanner, artista);
                     contador = 1;
                 } else {
                     return albums.get(numeroAlbum - 1);

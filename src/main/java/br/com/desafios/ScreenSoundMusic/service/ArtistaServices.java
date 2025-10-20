@@ -1,5 +1,6 @@
 package br.com.desafios.ScreenSoundMusic.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -7,8 +8,13 @@ import br.com.desafios.ScreenSoundMusic.model.Album;
 import br.com.desafios.ScreenSoundMusic.model.Artista;
 import br.com.desafios.ScreenSoundMusic.model.Tipo;
 import br.com.desafios.ScreenSoundMusic.repository.ArtistaRepository;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class ArtistaServices {
+    // Services
+    ConsultaComIA consultaComIA = new ConsultaComIA();
+
     // Repository
     private final ArtistaRepository artistaRepository;
 
@@ -37,7 +43,9 @@ public class ArtistaServices {
 
     public void listarArtistas() {
         System.out.println("--- Artistas ---");
-        listaDeArtistas().forEach(System.out::println);
+        listaDeArtistas().stream()
+        .sorted(Comparator.comparing(Artista::getNome))
+        .forEach(System.out::println);
     }
 
     public Artista selecionarArtista(Scanner scanner) {
@@ -64,7 +72,17 @@ public class ArtistaServices {
     }
 
     public void buscarInformacoesArtista(Scanner scanner) {
-
+        System.out.println("--- Busca de Informaçoes do Artista ---");
+        System.out.print("Nome do Artista: ");
+        String nomeArtista = scanner.nextLine();
+        try {
+            String jsonInformacoes = consultaComIA.informacoesArtista(nomeArtista);
+            String informacoes = converteInformacoes(jsonInformacoes, nomeArtista);
+            System.out.println(informacoes);
+            
+        } catch (Exception e) {
+            System.out.println("Erro ao buscar informações do artista: " + e.getMessage());
+        }
     }
 
     // Private Methods
@@ -103,5 +121,16 @@ public class ArtistaServices {
             }
         } while (tipo == null);
         return tipo;
+    }
+
+    private String converteInformacoes(String jsonInformacoes, String nome) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(jsonInformacoes);
+        String content = rootNode.get("choices")
+        .get(0)
+        .get("message")
+        .get("content")
+        .toString();
+        return "Informaçoes sobre " + nome + ":\n" + content.replaceAll("\"", "") + "\n";
     }
 }

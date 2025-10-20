@@ -1,5 +1,6 @@
 package br.com.desafios.ScreenSoundMusic.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -44,7 +45,9 @@ public class MusicaServices {
 
     public void listarMusicas() {
         System.out.println("--- Músicas ---");
-        musicaRepository.findAll().forEach(System.out::println);
+        musicaRepository.findAll().stream()
+        .sorted(Comparator.comparing(Musica::getArtista, Comparator.comparing(Artista::getNome)))
+        .forEach(System.out::println);
     }
 
     // Private Methods

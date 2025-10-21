@@ -2,12 +2,12 @@ package br.com.desafios.ScreenSoundMusic.main;
 
 import java.util.Scanner;
 
-import br.com.desafios.ScreenSoundMusic.model.Artista;
 import br.com.desafios.ScreenSoundMusic.repository.AlbumRepository;
 import br.com.desafios.ScreenSoundMusic.repository.ArtistaRepository;
 import br.com.desafios.ScreenSoundMusic.repository.MusicaRepository;
 import br.com.desafios.ScreenSoundMusic.service.AlbumServices;
 import br.com.desafios.ScreenSoundMusic.service.ArtistaServices;
+import br.com.desafios.ScreenSoundMusic.service.InputValidator;
 import br.com.desafios.ScreenSoundMusic.service.MusicaServices;
 
 public class Main {
@@ -16,18 +16,18 @@ public class Main {
     private final ArtistaServices artistaServices;
     private final MusicaServices musicaServices;
     private final AlbumServices albumServices;
+    private final InputValidator inputValidator;
 
     // Constructors
-    public Main(ArtistaRepository artistaRepository, MusicaRepository musicaRepository,
-            AlbumRepository albumRepository) {
-        this.artistaServices = new ArtistaServices(artistaRepository);
-        this.musicaServices = new MusicaServices(musicaRepository, artistaRepository, albumRepository);
-        this.albumServices = new AlbumServices(albumRepository, artistaServices);
+    public Main(ArtistaRepository artistaRepository, MusicaRepository musicaRepository, AlbumRepository albumRepository) {
+        this.inputValidator = new InputValidator(scanner);
+        this.artistaServices = new ArtistaServices(inputValidator, artistaRepository);
+        this.albumServices = new AlbumServices(albumRepository, artistaServices, inputValidator);
+        this.musicaServices = new MusicaServices(inputValidator, musicaRepository, artistaRepository, albumRepository, artistaServices, albumServices);  
     }
 
     // Public Methods
     public void menu() {
-        Artista artista = null;
         int opcao;
         System.out.println("\n--- Bem-vindo ao Screen Sound Music! ---");
         do {
@@ -42,16 +42,15 @@ public class Main {
                     7 - Buscar informacoes de um Artista
                     0 - Sair
                     """);
-            opcao = scanner.nextInt();
-            scanner.nextLine();
+            opcao = inputValidator.lerInteiroComLimite("Digite a opção desejada: ", 0, 7);
             switch (opcao) {
-                case 1 -> artistaServices.cadastrarArtista(scanner);
-                case 2 -> albumServices.cadastrarAlbum(scanner, artista);
-                case 3 -> musicaServices.cadastrarMusica(scanner);
+                case 1 -> artistaServices.cadastrarArtista();
+                case 2 -> albumServices.cadastrarAlbum(null);
+                case 3 -> musicaServices.cadastrarMusica();
                 case 4 -> musicaServices.listarMusicas();
                 case 5 -> artistaServices.listarArtistas();
                 case 6 -> albumServices.listarAlbums();
-                case 7 -> artistaServices.buscarInformacoesArtista(scanner);
+                case 7 -> artistaServices.buscarInformacoesArtista();
                 case 0 -> System.out.println("Saindo...\n");
                 default -> System.out.println("Opçao invalida!\n");
             }

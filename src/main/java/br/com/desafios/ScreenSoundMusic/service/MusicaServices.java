@@ -2,7 +2,6 @@ package br.com.desafios.ScreenSoundMusic.service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Scanner;
 
 import br.com.desafios.ScreenSoundMusic.model.Album;
 import br.com.desafios.ScreenSoundMusic.model.Artista;
@@ -12,35 +11,35 @@ import br.com.desafios.ScreenSoundMusic.repository.ArtistaRepository;
 import br.com.desafios.ScreenSoundMusic.repository.MusicaRepository;
 
 public class MusicaServices {
-    // Repository
+    // Services
+    private final InputValidator inputValidator;
     private final MusicaRepository musicaRepository;
     private final ArtistaServices artistaServices;
     private final AlbumServices albumServices;
 
     // Constructors
-    public MusicaServices(MusicaRepository musicaRepository, ArtistaRepository artistaRepository, AlbumRepository albumRepository) {
+    public MusicaServices(InputValidator inputValidator, MusicaRepository musicaRepository, ArtistaRepository artistaRepository, AlbumRepository albumRepository, ArtistaServices artistaServices, AlbumServices albumServices) {
+        this.inputValidator = inputValidator;
         this.musicaRepository = musicaRepository;
-        this.artistaServices = new ArtistaServices(artistaRepository);
-        this.albumServices = new AlbumServices(albumRepository, artistaServices);
+        this.artistaServices = artistaServices;
+        this.albumServices = albumServices;
     }
 
     // Public Methods
-    public void cadastrarMusica(Scanner scanner) {
-        String resposta;
+    public void cadastrarMusica() {
+        boolean resposta;
         do {
             System.out.println("--- Cadastro de Música ---");
-            Artista artista = artistaServices.selecionarArtista(scanner);
-            Album album = albumServices.selecionarAlbum(artista, scanner);
-            System.out.print("Nome da Música: ");
-            String nomeMusica = scanner.nextLine();
+            Artista artista = artistaServices.selecionarArtista();
+            Album album = albumServices.selecionarAlbum(artista);
+            String nomeMusica = inputValidator.lerTextoVazio("Nome da Música: ");
             if (existeMusica(nomeMusica)) {
                 System.out.println("Música já cadastrada!");
                 return;
             }
             salvarMusica(nomeMusica, album, artista);
-            System.out.println("Deseja Adionar outra música? (S/N)");
-            resposta = scanner.nextLine();
-        } while (!resposta.equalsIgnoreCase("N"));
+            resposta = inputValidator.confirmar("Deseja Adionar outra música? (S/N)");
+        } while (resposta);
     }
 
     public void listarMusicas() {

@@ -54,10 +54,7 @@ public class Artista {
 
     // Getters and Setters
     public List<Musica> getMusicas() {
-        if (musicas == null) {
-            System.out.println("O artista não possui músicas cadastradas.");
-        }
-
+        if (musicas == null) System.out.println("O artista não possui músicas cadastradas.");
         return musicas;
     }
 

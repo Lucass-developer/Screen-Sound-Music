@@ -2,20 +2,23 @@ package br.com.desafios.ScreenSoundMusic.service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Scanner;
 
 import br.com.desafios.ScreenSoundMusic.model.Album;
 import br.com.desafios.ScreenSoundMusic.model.Artista;
 import br.com.desafios.ScreenSoundMusic.repository.AlbumRepository;
 
 public class AlbumServices {
+    // Services
+    private final InputValidator inputValidator;
     private final AlbumRepository albumRepository;
     private final ArtistaServices artistaServices;
 
     // Constructors
-    public AlbumServices(AlbumRepository albumRepository, ArtistaServices artistaServices) {
+    public AlbumServices(AlbumRepository albumRepository, ArtistaServices artistaServices,
+            InputValidator inputValidator) {
         this.albumRepository = albumRepository;
         this.artistaServices = artistaServices;
+        this.inputValidator = inputValidator;
     }
 
     // Public Methods
@@ -26,39 +29,31 @@ public class AlbumServices {
                 .forEach(System.out::println);
     }
 
-    public void cadastrarAlbum(Scanner scanner, Artista artista) {
-        String resposta;
+    public void cadastrarAlbum(Artista artista) {
+        boolean resposta;
         do {
             System.out.println("--- Cadastro de Album ---");
-            String novoArtista;
             if (artista == null) {
-                do {
-                    System.out.println("Deseja Adionar um novo artista? (S/N)");
-                    novoArtista = scanner.nextLine();
-                    if (novoArtista.equalsIgnoreCase("S")) {
-                        artistaServices.cadastrarArtista(scanner);
-                    }
-                } while (!novoArtista.equalsIgnoreCase("N"));
-                artista = artistaServices.selecionarArtista(scanner);
+                if (inputValidator.confirmar("Deseja Adionar um novo artista? (S/N)")) {
+                    artistaServices.cadastrarArtista(); 
+                } else {
+                    artista = artistaServices.selecionarArtista();
+                }
             }
-            System.out.print("Nome do Album: ");
-            String nomeAlbum = scanner.nextLine();
+            String nomeAlbum = inputValidator.lerTextoVazio("Nome do Album: ");
             if (existeAlbum(nomeAlbum)) {
                 System.out.println("Album já cadastrado!");
                 return;
             }
-            System.out.print("Ano de Lançamento: ");
-            Integer anoDeLancamento = scanner.nextInt();
-            scanner.nextLine();
+            Integer anoDeLancamento = inputValidator.lerInteiroComLimite("Ano de Lançamento:", 1900, 2025);
             salvarAlbum(nomeAlbum, artista, anoDeLancamento);
 
-            System.out.println("Deseja Adionar outro album? (S/N)");
-            resposta = scanner.nextLine();
+            resposta = inputValidator.confirmar("Deseja Adionar outro album? (S/N)");
 
-        } while (!resposta.equalsIgnoreCase("N"));
+        } while (resposta);
     }
 
-    public Album selecionarAlbum(Artista artista, Scanner scanner) {
+    public Album selecionarAlbum(Artista artista) {
         int contador = 1;
         while (true) {
             List<Album> albums = artistaServices.listaDeAlbums(artista);
@@ -67,20 +62,13 @@ public class AlbumServices {
                 System.out.println(contador + " - " + a.getNome());
                 contador++;
             }
-            System.out.println("Digite o número do Album (0 Para Adicionar um Novo):");
-            int numeroAlbum = scanner.nextInt();
-            scanner.nextLine();
-
-            if (numeroAlbum <= albums.size() && numeroAlbum >= 0) {
-                if (numeroAlbum == 0) {
-                    cadastrarAlbum(scanner, artista);
-                    contador = 1;
-                } else {
-                    return albums.get(numeroAlbum - 1);
-                }
-            } else {
-                System.out.println("Album não encontrado!\n");
+            int numeroAlbum = inputValidator.lerInteiroComLimite("Digite o número do Album (0 Para Adicionar um Novo)",
+                    0, albums.size());
+            if (numeroAlbum == 0) {
+                cadastrarAlbum(artista);
                 contador = 1;
+            } else {
+                return albums.get(numeroAlbum - 1);
             }
         }
     }
